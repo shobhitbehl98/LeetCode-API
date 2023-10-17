@@ -1,136 +1,133 @@
 
 let button=document.querySelector('button');
 let chart;
-button.addEventListener('click',async ()=>{
-  let Dates=[" "];
-  let Ratings=[];
-  let username=document.getElementById('username').value;
-  let someContainer=document.querySelector(".container");
-  let contest=document.querySelector(".d1");
-  someContainer.innerHTML="";
-  contest.innerHTML="";
-  if(chart){
-    chart.destroy();
-  }
-  let res;
-  try {
-    res = await getData(username);
-  } catch(e) {
-    res = e;
-  }
-
-  let contestDetails=res.data.userContestRanking
-  let indContest=res.data.userContestRankingHistory
-
-  if(!contestDetails){
-    someContainer.innerHTML=`<h1>No Data Found</h1>`;
-    return
-    
-  }
+button.addEventListener('click',()=>getContestData());
+async function getContestData() {
+    let Dates=[" "];
+    let Ratings=[];
+    let username=document.getElementById('username').value;
+    let someContainer=document.querySelector(".container");
+    let contest=document.querySelector(".d1");
+    someContainer.innerHTML="";
+    contest.innerHTML="";
+    if(chart){
+      chart.destroy();
+    }
+    let res;
+    try {
+      res = await getData(username);
+    } catch(e) {
+      res = e;
+    }
   
-  let c=0;
-  let cd=document.createElement('div');
-  cd.setAttribute('class','cd')
-  for(let key in contestDetails){
-    if(contestDetails[key]!=null){
-      let value=contestDetails[key];
-      let updKey=updatedKey(key)
-      if(key=='attendedContestsCount'){
-        c=value;
-      }
-      if(key=='badge'){
-        value=value.name;
-      }else{
-        if(key!='topPercentage'){
-          value=Math.round(value);
+    let contestDetails=res.data.userContestRanking
+    let indContest=res.data.userContestRankingHistory
+  
+    if(!contestDetails){
+      someContainer.innerHTML=`<h1>No Data Found</h1>`;
+      return
+      
+    }
+    
+    let c=0;
+    let cd=document.createElement('div');
+    cd.setAttribute('class','cd')
+    for(let key in contestDetails){
+      if(contestDetails[key]!=null){
+        let value=contestDetails[key];
+        let updKey=updatedKey(key)
+        if(key=='attendedContestsCount'){
+          c=value;
         }
+        if(key=='badge'){
+          value=value.name;
+        }else{
+          if(key!='topPercentage'){
+            value=Math.round(value);
+          }
+        }
+        cd.innerHTML+=`<li>${updKey}: ${value}</li>`
       }
-      cd.innerHTML+=`<li>${updKey}: ${value}</li>`
+    }
+    
+    let max=0;
+    contest.innerHTML+=` <tr>
+    <th>#</th>
+    <th>Contest</th>
+    <th>Start Time</th>
+    <th>Problems Solved</th>
+    <th>Ranking</th>
+    <th>Rating Change</th>
+    <th>New Rating</th>
+  </tr>`
+    for(let i=indContest.length-1;i>=0;i--){
+      let contestText=document.createElement('tr');
+      let obj=indContest[i];
+      if(obj['attended']){
+        contestText.innerHTML+=`<td>${c}</td>`;
+        c--;
+        let prev=0;
+        if(i>0){
+          prev=indContest[i-1]['rating'];
+        }
+        Ratings.push(Math.round(obj['rating']));
+        Dates.push(new Date(obj['contest'].startTime*1000).toLocaleDateString());
+        max=Math.max(max,obj['rating']);
+        let cno=obj['contest'].title.split(" ");
+        contestText.innerHTML+=`<td><a href="https://leetcode.com/contest/${cno[cno.length-3]}-contest-${cno[cno.length-1]}/" target="_blank" rel="noopener noreferrer">${obj['contest'].title}</a></td>`
+        contestText.innerHTML+=`<td>${new Date(obj['contest'].startTime*1000)}</td>`
+        contestText.innerHTML+=`<td><a href="https://leetcode.com/contest/${cno[cno.length-3]}-contest-${cno[cno.length-1]}/ranking/${Math.ceil(obj['ranking']/25)}" target="_blank" rel="noopener noreferrer">${obj['problemsSolved']}</a></td>`
+        contestText.innerHTML+=`<td>${obj['ranking']}</td>`
+        contestText.innerHTML+=`<td>${Math.round(obj['rating']-prev)}</td>`
+        contestText.innerHTML+=`<td>${Math.round(obj['rating'])}</td>`
+        contest.appendChild(contestText);
     }
   }
-  
-  let max=0;
-  contest.innerHTML+=` <tr>
-  <th>#</th>
-  <th>Contest</th>
-  <th>Start Time</th>
-  <th>Problems Solved</th>
-  <th>Ranking</th>
-  <th>Rating Change</th>
-  <th>New Rating</th>
-</tr>`
-  for(let i=indContest.length-1;i>=0;i--){
-    let contestText=document.createElement('tr');
-    let obj=indContest[i];
-    if(obj['attended']){
-      contestText.innerHTML+=`<td>${c}</td>`;
-      c--;
-      let prev=0;
-      if(i>0){
-        prev=indContest[i-1]['rating'];
-      }
-      Ratings.push(Math.round(obj['rating']));
-      Dates.push(new Date(obj['contest'].startTime*1000).toLocaleDateString());
-      max=Math.max(max,obj['rating']);
-      let cno=obj['contest'].title.split(" ");
-      contestText.innerHTML+=`<td><a href="https://leetcode.com/contest/${cno[cno.length-3]}-contest-${cno[cno.length-1]}/" target="_blank" rel="noopener noreferrer">${obj['contest'].title}</a></td>`
-      contestText.innerHTML+=`<td>${new Date(obj['contest'].startTime*1000)}</td>`
-      contestText.innerHTML+=`<td><a href="https://leetcode.com/contest/${cno[cno.length-3]}-contest-${cno[cno.length-1]}/ranking/${Math.ceil(obj['ranking']/25)}" target="_blank" rel="noopener noreferrer">${obj['problemsSolved']}</a></td>`
-      contestText.innerHTML+=`<td>${obj['ranking']}</td>`
-      contestText.innerHTML+=`<td>${Math.round(obj['rating']-prev)}</td>`
-      contestText.innerHTML+=`<td>${Math.round(obj['rating'])}</td>`
-      contest.appendChild(contestText);
-  }
-}
-cd.innerHTML+=`<li>Peak Rating: <b>${Math.round(max)}</b></li>`;
-someContainer.appendChild(cd);
-Ratings.push(1500);
-Ratings=Ratings.reverse();
-const labels = Dates;
-const data = {
-  labels: labels,
-  datasets: [{
-      data: Ratings,
-      fill: false,
-      borderColor: 'rgb(236,194,65)',
-      tension: 0
-  }],
-  
-};
-const plugin = {
-  id: 'customCanvasBackgroundColor',
-  beforeDraw: (chart, args, options) => {
-    const {ctx} = chart;
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.fillStyle = options.color || '#99ffff';
-    ctx.fillRect(0, 0, chart.width, chart.height);
-    ctx.restore();
-  }
-};
-const config = {
-  type: 'line',
-  data: data,
-  options: {
-    plugins:{
-      customCanvasBackgroundColor: {
-       color: 'white',
-     },
-     legend: {
-      display: false
-     },
-    },
+  cd.innerHTML+=`<li>Peak Rating: <b>${Math.round(max)}</b></li>`;
+  someContainer.appendChild(cd);
+  Ratings.push(1500);
+  Ratings=Ratings.reverse();
+  const labels = Dates;
+  const data = {
+    labels: labels,
+    datasets: [{
+        data: Ratings,
+        fill: false,
+        borderColor: 'rgb(236,194,65)',
+        tension: 0
+    }],
     
-   },
-   plugins: [plugin],
-};
-let ctx=document.getElementById("chart").getContext('2d');
-chart=new Chart(ctx,config);
-});
-
-
-
-
+  };
+  const plugin = {
+    id: 'customCanvasBackgroundColor',
+    beforeDraw: (chart, args, options) => {
+      const {ctx} = chart;
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = options.color || '#99ffff';
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    }
+  };
+  const config = {
+    type: 'line',
+    data: data,
+    options: {
+      plugins:{
+        customCanvasBackgroundColor: {
+         color: 'white',
+       },
+       legend: {
+        display: false
+       },
+      },
+      
+     },
+     plugins: [plugin],
+  };
+  let ctx=document.getElementById("chart").getContext('2d');
+  chart=new Chart(ctx,config);
+  }
 const isUpperCase = (string) => /^[A-Z]*$/.test(string)
 function updatedKey(key){
   let s="";
