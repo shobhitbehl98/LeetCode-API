@@ -1,0 +1,85 @@
+body{
+    background-color: yellow;
+}
+.input{
+   display: flex;
+   scale: 1.4;
+   margin-left: 3rem;
+}
+h1{
+    margin-left: 29%;
+    font-family: Arial;
+}
+.usertext{
+    font-family: Arial;
+    margin-left: 30%;
+    margin-top: 0.1rem;
+}
+.btn1{
+    margin-top: 1rem;
+    margin-left: 1rem;
+}
+#username{
+    margin-left: 1rem;
+    height: 1rem;
+    font-family: Arial;
+    margin-top: 1rem;
+    padding-left:5px;
+}
+.data{
+    margin-left: 5rem;
+}
+.container{
+    margin-top: 3rem;
+    font-size: large;
+    width: fit-content;
+    margin-left: 30%;
+}
+.cd{
+    font-family: Arial;
+    padding: 1rem;
+    height: fit-content;
+    background-color: whitesmoke;
+    border: solid;
+    border-width: 2px;
+}
+.contest{
+    font-family: Arial;
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.contest-text{
+    margin-bottom: 1rem;
+    background-color: wheat;
+    padding: 1rem;
+    height: fit-content;
+    width: fit-content;
+    border: solid;
+    border-width: 2px;
+    border-color: black;
+}
+.chart1{
+    width: 1000px;
+    height: fit-content;
+    margin-top: 3rem;
+    
+}
+.d1{
+    font-family: Arial;
+    width: 80%;
+    margin-top: 4rem;
+    background-color: aliceblue;
+    border-spacing: 0;
+    font-size: 18px;
+}
+td,th {
+    border: 1px solid ;
+    text-align: center;
+    padding: 10px;
+  }
+  th{
+    border-top: 2px solid;
+    border-bottom: 2px solid;
+  }
