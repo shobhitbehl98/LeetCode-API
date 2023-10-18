@@ -3,7 +3,7 @@ let button=document.querySelector('button');
 let chart;
 button.addEventListener('click',()=>getContestData());
 async function getContestData() {
-    let Dates=[" "];
+    let Dates=[];
     let Ratings=[];
     let username=document.getElementById('username').value;
     let someContainer=document.querySelector(".container");
@@ -86,14 +86,16 @@ async function getContestData() {
   cd.innerHTML+=`<li>Peak Rating: <b>${Math.round(max)}</b></li>`;
   someContainer.appendChild(cd);
   Ratings.push(1500);
+  Dates.push(" ");
   Ratings=Ratings.reverse();
+  Dates=Dates.reverse();
   const labels = Dates;
   const data = {
     labels: labels,
     datasets: [{
         data: Ratings,
         fill: false,
-        borderColor: 'rgb(236,194,65)',
+        borderColor: 'rgb(0,0,0)',
         tension: 0
     }],
     
